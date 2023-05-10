@@ -1,0 +1,24 @@
+#: include screens/menu.kv
+#: include screens/game.kv
+#: include screens/settings.kv
+#: include message.kv
+
+ScreenManager:
+    opacity: app.alpha
+
+    canvas.before:
+        Color:
+            rgb: app.colors.background_0
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    MenuScreen:
+        name: "menu"
+
+    GameScreen:
+        name: "game"
+
+    SettingsScreen:
+        name: "settings"
+

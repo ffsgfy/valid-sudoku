@@ -1,0 +1,92 @@
+#: include common.kv
+#: import Message message.Message
+
+<Message>:
+    anchor_x: "center"
+    anchor_y: "center"
+    outline_color: app.colors.foreground_0
+    background_color: app.colors.background_0
+    background_dim: 0.5
+    outline_thickness: dp(2)
+    corner_radius: dp(4)
+    size_hint: (0.7, None)
+    size_hint_max_x: dp(800)
+    height: inner.height + self.outline_thickness
+    opacity: self.alpha
+    animation_duration: 0.1
+
+    canvas.before:
+        Color:
+            rgba: (0.0, 0.0, 0.0, self.background_dim)
+        Rectangle:
+            pos: (0.0, 0.0)
+            size: self.size if self.window is None else self.window.size
+
+    BoxLayout:
+        id: inner
+        orientation: "vertical"
+        size_hint: (None, None)
+        width: root.width - root.outline_thickness
+        height: self.minimum_height
+
+        canvas.before:
+            Color:
+                rgb: root.outline_color
+            RoundedRectangle:
+                pos: (self.x - root.outline_thickness / 2, self.y - root.outline_thickness / 2)
+                size: (self.width + root.outline_thickness, self.height + root.outline_thickness)
+                radius: (root.corner_radius,)
+
+            Color:
+                rgb: root.background_color
+            RoundedRectangle:
+                pos: (self.x + root.outline_thickness / 2, self.y + root.outline_thickness / 2)
+                size: (self.width - root.outline_thickness, self.height - root.outline_thickness)
+                radius: (root.corner_radius,)
+
+        HGlueDouble
+        HGlueDouble
+
+        Label:
+            text: root.text
+            halign: "center"
+            valign: "center"
+            color: app.colors.foreground_0
+            font_name: "fonts/ApexMk2-Regular.otf"
+            font_size: sp(22)
+            size_hint: (0.9, None)
+            height: self.texture_size[1]
+            text_size: (self.width, None)
+            pos_hint: {"center_x": 0.5}
+
+        HGlueDouble
+
+        HLineThin:
+            color: app.colors.background_1
+            size_hint_x: 0.9
+            pos_hint: {"center_x": 0.5}
+
+        HGlueDouble
+
+        OutlineTextButton:
+            text: "Close"
+            foreground_color: app.colors.foreground_0
+            background_color: app.colors.background_1 if self.down else app.colors.background_0
+            outline_color: app.colors.foreground_0 if self.down else app.colors.foreground_1
+            disabled_color: self.color
+            outline_thickness: dp(2)
+            corner_radius: dp(4)
+            font_name: "fonts/ApexMk2-LightCondensed.otf"
+            font_size: sp(24)
+            size_hint: (0.5, None)
+            size_hint_min: self.texture_size
+            height: self.texture_size[1]
+            padding: (dp(8), dp(8))
+            pos_hint: {"center_x": 0.5}
+            animation_duration: 0.1
+
+            on_release: root.dismiss()
+
+        HGlueDouble
+        HGlueDouble
+

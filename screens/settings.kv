@@ -1,0 +1,119 @@
+#: include common.kv
+#: import SettingsScreen screens.settings.SettingsScreen
+
+<ColorschemeButton@OutlineTextButton>:
+    foreground_color: app.colors.background_0 if self.down else app.colors.foreground_0
+    background_color: app.colors.foreground_0 if self.down else app.colors.background_0
+    outline_color: app.colors.background_0 if self.down else app.colors.foreground_1
+    disabled_color: self.color
+    outline_thickness: dp(2)
+    corner_radius: dp(4)
+    font_name: "fonts/ApexMk2-Regular.otf"
+    font_size: sp(24)
+    size_hint: (0.7, None)
+    size_hint_min: self.texture_size
+    size: self.texture_size
+    padding: (dp(8), dp(8))
+    pos_hint: {"center_x": 0.5}
+    animation_duration: 0.1
+
+    on_release: app.set_colorscheme(self.text.lower())
+
+<SettingsLine@HLineThin>:
+    color: app.colors.foreground_0
+    size_hint_x: 0.9
+
+<FooterLabel@Label>:
+    color: app.colors.foreground_0
+    font_name: "fonts/ApexMk2-LightCondensed.otf"
+    font_size: sp(24)
+    size_hint: (None, None)
+    size: self.texture_size
+    padding: (dp(16), dp(16))
+
+<SettingsScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        y: min(0.0, self.parent.height - self.minimum_height)
+
+        FloatLayout:
+            id: nav
+            size_hint: (1.0, None)
+            height: max(nav_back.height, footer.minimum_height)
+            
+            NavButtonBack:
+                id: nav_back
+
+        HGlueDouble:
+            size_hint_min_y: 0.0
+            size_hint_max_y: None
+
+        Label:
+            text: "Colorscheme"
+            color: app.colors.foreground_0
+            font_name: "fonts/ApexMk2-Regular.otf"
+            font_size: sp(48)
+            size_hint: (None, None)
+            size: self.texture_size
+            pos_hint: {"center_x": 0.5}
+
+        HGlueDouble
+
+        SettingsLine
+
+        HGlueDouble
+
+        ColorschemeButton:
+            text: "White"
+            size_hint_x: 0.8
+
+        HGlueSingle
+
+        ColorschemeButton:
+            text: "Beige"
+
+        HGlueSingle
+
+        ColorschemeButton:
+            text: "Green"
+
+        HGlueSingle
+
+        ColorschemeButton:
+            text: "Blue"
+
+        HGlueSingle
+
+        ColorschemeButton:
+            text: "Black"
+            size_hint_x: 0.8
+
+        HGlueDouble
+
+        SettingsLine
+
+        HGlueDouble:
+            size_hint_min_y: 0.0
+            size_hint_max_y: None
+
+        BoxLayout:
+            id: footer
+            orientation: "horizontal"
+            size_hint: (1.0, None)
+            height: max(self.minimum_height, nav.height)
+
+            VGlue:
+                size_hint_x: 0.05
+
+            FooterLabel:
+                text: "Valid Sudoku v. 0.1.0"
+
+            VGlue:
+                size_hint_x: 0.9
+
+            FooterLabel:
+                text: "By @ffsgfy"
+
+            VGlue:
+                size_hint_x: 0.05
+

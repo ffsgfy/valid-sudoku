@@ -1,0 +1,451 @@
+#: include common.kv
+#: import GameScreen screens.game.GameScreen
+
+#: set grid_cell_hint 8.0
+#: set grid_cell_min (sp(20) + dp(14))
+#: set grid_cell_max (sp(20) + dp(42))
+#: set grid_spacing_hint 1.0
+#: set grid_spacing_min dp(2)
+#: set grid_spacing_max dp(4)
+#: set grid_min_size (grid_cell_min * 9 + grid_spacing_min * 14)
+#: set grid_max_size (grid_cell_max * 9 + grid_spacing_max * 14)
+
+<GridCell>:
+    anchor_x: "center"
+    anchor_y: "center"
+    foreground_color: app.colors.foreground_0
+    background_color: app.colors.background_1 if self.is_selected else app.colors.background_0
+    outline_color: app.colors.error if self.is_error else app.colors.warning if (self.is_warning and app.state.assist) else self.foreground_color if self.is_selected else app.colors.background_1
+    outline_thickness: dp(2)
+    corner_radius: dp(4)
+    size_hint: (grid_cell_hint, 1.0)
+    size_hint_min: (grid_cell_min, grid_cell_min)
+    size_hint_max: (grid_cell_max, grid_cell_max)
+    text_scale_pop: 1.5
+    animation_duration: 0.1
+
+    Label:
+        text: root.text
+        color: root.foreground_color
+        font_size: sp(20)
+        font_name: "fonts/ApexMk2-Regular.otf"
+        size_hint: (None, None)
+        size: self.texture_size
+        padding: (dp(8), dp(8))
+        opacity: root.text_opacity
+
+        canvas.before:
+            PushMatrix
+
+            Scale:
+                origin: self.center
+                xyz: (root.text_scale, root.text_scale, root.text_scale)
+
+        canvas.after:
+            PopMatrix
+
+<GridVGlue@VGlue>
+    size_hint_x: grid_spacing_hint
+    size_hint_min_x: grid_spacing_min
+    size_hint_max_x: grid_spacing_max
+
+<GridHGlue@HGlue>
+    size_hint_y: grid_spacing_hint
+    size_hint_min_y: grid_spacing_min
+    size_hint_max_y: grid_spacing_max
+
+<GridBlockRow@BoxLayout>:
+    orientation: "horizontal"
+    size_hint: (1.0, grid_cell_hint)
+    size_hint_min: self.minimum_size
+
+    GridVGlue
+
+    GridCell
+
+    GridVGlue
+
+    GridCell
+
+    GridVGlue
+
+    GridCell
+
+    GridVGlue
+
+<GridBlock>:
+    orientation: "vertical"
+    background_color: app.colors.background_1
+    corner_radius: dp(4)
+    size_hint: (None, 1.0)
+    size_hint_min: self.minimum_size
+
+    canvas.before:
+        Color:
+            rgb: self.background_color
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: (self.corner_radius,)
+
+    ProxyDummy:
+        proxy_count: 3
+        -size_hint: (grid_cell_hint, 1.0)
+        -size_hint_min: (grid_cell_min, 0.0)
+        -size_hint_max: (grid_cell_max, None)
+
+    ProxyDummy:
+        proxy_count: 4
+
+        GridVGlue
+
+    GridHGlue
+
+    GridBlockRow
+
+    GridHGlue
+
+    GridBlockRow
+
+    GridHGlue
+
+    GridBlockRow
+
+    GridHGlue
+
+<GridRow@ProxyBoxLayout>:
+    orientation: "horizontal"
+    size_hint: (1.0, None)
+    size_hint_min: self.minimum_size
+
+    ProxyDummy:
+        proxy_count: 3
+        -size_hint: (1.0, grid_cell_hint)
+        -size_hint_min: (0.0, grid_cell_min)
+        -size_hint_max: (None, grid_cell_max)
+
+    ProxyDummy:
+        proxy_count: 4
+
+        GridHGlue
+
+    GridBlock
+
+    GridVGlue
+
+    GridBlock
+
+    GridVGlue
+
+    GridBlock
+
+<-Grid@GridBlock>:
+    orientation: "vertical"
+    size_hint: (None, None)
+    width: max(min(self.parent.width, self.parent.height, grid_max_size), grid_min_size)
+    height: self.width
+
+    GridRow
+
+    GridHGlue
+
+    GridRow
+
+    GridHGlue
+
+    GridRow
+
+<GridLine@HLineThin>:
+    color: app.colors.foreground_0
+    size_hint_x: 0.9
+
+<PanelAction>:
+    foreground_color: app.colors.foreground_1 if self.disabled else app.colors.foreground_0
+    background_color: app.colors.background_1 if self.down else app.colors.background_0
+    outline_color: app.colors.foreground_0 if self.down else app.colors.foreground_1
+    color: self.foreground_color
+    disabled_color: self.color
+    outline_thickness: dp(2)
+    corner_radius: dp(4)
+    animation_duration: 0.1
+
+<PanelCell@PanelAction>:
+    value: 0
+    value_mask: (1 << (self.value - 1)) if self.value > 0 else 0
+    text: str(self.value)
+    font_name: "fonts/ApexMk2-Regular.otf"
+    font_size: sp(24)
+    size_hint: (1.0, None)
+    size_hint_min: (grid_cell_min, 0.0)
+    size_hint_max: (grid_cell_max, None)
+    height: self.width
+    padding: (dp(8), dp(8))
+    disabled: True if (self.screen is None) or (self.screen.selection is None) else False if not app.state.assist else ((self.value_mask & self.screen.selection_mask) == 0)
+
+    on_release: self.screen.put(self.value_mask)
+
+<PanelButton@PanelAction>:
+    font_name: "fonts/ApexMk2-LightCondensed.otf"
+    font_size: sp(22)
+    size_hint: (1.0, None)
+    size_hint_min: self.texture_size
+    size_hint_max: (None, None)
+    height: self.texture_size[1]
+    padding: (dp(8), dp(8))
+
+<PanelToggle@TogglingButton+PanelButton>
+
+<GameScreen>:
+    ProxyBoxLayout:
+        orientation: "vertical"
+        y: min(0.0, self.parent.height - self.minimum_height)
+
+        FloatLayout:
+            id: nav
+            size_hint: (1.0, None)
+            height: max(nav_back.height, nav_settings.height)
+
+            NavButtonBack:
+                id: nav_back
+
+            NavButtonSettings:
+                id: nav_settings
+
+        HGlueDouble:
+            size_hint_min_y: 0.0
+            size_hint_max_y: None
+
+        BoxLayout:
+            orientation: "horizontal"
+            size_hint: (0.9, None)
+            size: self.minimum_size
+            pos_hint: {"center_x": 0.5}
+
+            Label:
+                text: "Time"
+                color: app.colors.foreground_0
+                font_name: "fonts/ApexMk2-LightCondensed.otf"
+                font_size: sp(24)
+                size_hint: (None, None)
+                size: self.texture_size
+                padding: (dp(1), dp(1))
+
+            HGlue
+
+            Label:
+                text: "Mistakes"
+                color: app.colors.foreground_0
+                font_name: "fonts/ApexMk2-LightCondensed.otf"
+                font_size: sp(24)
+                size_hint: (None, None)
+                size: self.texture_size
+                padding: (dp(1), dp(1))
+
+        ProxyAnchorLayout:
+            anchor_x: "center"
+            anchor_y: "center"
+
+            ProxyWidget:
+                -size_hint: (0.9, None)
+
+                BoxLayout:
+                    orientation: "horizontal"
+                    size_hint: (1.0, None)
+                    size: self.minimum_size
+                    pos_hint: {"center_x": 0.5}
+
+                    Label:
+                        value: int(app.state.timer)
+                        text: "{:02d}:{:02d}".format(self.value // 60, self.value % 60)
+                        color: app.colors.foreground_0
+                        font_name: "fonts/ApexMk2-Regular.otf"
+                        font_size: sp(24)
+                        size_hint: (None, None)
+                        size: self.texture_size
+                        padding: (dp(1), dp(1))
+
+                    HGlue
+
+                    Label:
+                        value: app.state.mistakes
+                        text: str(self.value)
+                        color: app.colors.foreground_0
+                        font_name: "fonts/ApexMk2-Regular.otf"
+                        font_size: sp(24)
+                        size_hint: (None, None)
+                        size: self.texture_size
+                        padding: (dp(1), dp(1))
+
+            Label:
+                text: app.state.difficulty
+                color: app.colors.foreground_0
+                font_name: "fonts/ApexMk2-LightCondensed.otf"
+                font_size: sp(24)
+                size_hint: (None, None)
+                size: self.texture_size
+                padding: (dp(1), dp(1))
+
+        HGlueSingle
+
+        GridLine
+
+        HGlueSingle
+
+        HGlueHalf
+
+        ProxyAnchorLayout:
+            anchor_x: "center"
+            anchor_y: "center"
+
+            ProxyDummy:
+                -size_hint: (None, None)
+                -size: (grid_min_size, grid_min_size)
+                -pos_hint: {"center_x": 0.5}
+
+            ProxyDummy:
+                -size_hint: (0.95, 8.0)
+                -size_hint_min: (0.0, 0.0)
+                -size_hint_max: (None, grid_max_size - grid_min_size)
+                -pos_hint: {"center_x": 0.5}
+
+            Grid
+
+        HGlueHalf
+
+        HGlueSingle
+
+        GridLine
+
+        HGlueSingle
+
+        HGlueHalf
+
+        BoxLayout:
+            orientation: "horizontal"
+            size_hint: (0.9, None)
+            size_hint_min: self.minimum_size
+            height: self.minimum_height
+            pos_hint: {"center_x": 0.5}
+
+            VGlueSingle:
+                size_hint_max_x: None
+
+            PanelCell:
+                value: 1
+
+            VGlueHalf
+
+            PanelCell:
+                value: 2
+
+            VGlueHalf
+
+            PanelCell:
+                value: 3
+
+            VGlueHalf
+
+            PanelCell:
+                value: 4
+
+            VGlueHalf
+
+            PanelCell:
+                value: 5
+
+            VGlueSingle:
+                size_hint_max_x: None
+
+        HGlueSingle
+
+        BoxLayout:
+            orientation: "horizontal"
+            size_hint: (0.9, None)
+            size_hint_min: self.minimum_size
+            height: self.minimum_height
+            pos_hint: {"center_x": 0.5}
+
+            VGlueSingle:
+                size_hint_max_x: None
+
+            PanelCell:
+                value: 6
+
+            VGlueHalf
+
+            PanelCell:
+                value: 7
+
+            VGlueHalf
+
+            PanelCell:
+                value: 8
+
+            VGlueHalf
+
+            PanelCell:
+                value: 9
+
+            VGlueHalf
+
+            PanelCell:
+                -text: "X"
+                -disabled: True if (self.screen is None) or (self.screen.selection is None) else False
+
+            VGlueSingle:
+                size_hint_max_x: None
+
+        HGlueSingle
+
+        HLineThin:
+            color: app.colors.background_1
+            size_hint_x: 0.8
+
+        HGlueSingle
+
+        ProxyBoxLayout:
+            orientation: "horizontal"
+
+            ProxyDummy:
+                PanelButton:
+                    text: "A"
+                    size_hint: (0.9, None)
+                    pos_hint: {"center_x": 0.5}
+
+            AnchorLayout:
+                size_hint: (1.0, 1.0)
+
+                PanelButton:
+                    text: "Hint"
+
+                    on_release: root.hint()
+
+            VGlueSingle
+
+            AnchorLayout:
+                size_hint: (1.0, 1.0)
+
+                PanelToggle:
+                    id: assist
+                    text: "Assist"
+
+                    on_down: app.state.assist = self.down
+
+            VGlueSingle
+
+            AnchorLayout:
+                size_hint: (1.0, 1.0)
+
+                PanelButton:
+                    text: "Export"
+
+                    on_release: app.export_board()
+
+        HGlueDouble:
+            size_hint_min_y: 0.0
+            size_hint_max_y: None
+
+        Widget:
+            size_hint: (1.0, None)
+            height: nav.height / 2
+

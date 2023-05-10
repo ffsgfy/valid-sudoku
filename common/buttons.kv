@@ -1,0 +1,39 @@
+#: import SimpleButton common.buttons.SimpleButton
+#: import OutlineButton common.buttons.OutlineButton
+#: import TogglingButton common.buttons.TogglingButton
+
+<SimpleButton>:
+    down: True if self.state == "down" else False
+
+    canvas.before:
+        Color:
+            rgba: self.background_color
+        RoundedRectangle:
+            pos: self.pos
+            size: self.size
+            radius: (self.corner_radius,)
+
+<OutlineButton>:
+    canvas.before:
+        Clear
+
+        Color:
+            rgba: self.outline_color
+        RoundedRectangle:
+            pos: (self.x - self.outline_thickness / 2, self.y - self.outline_thickness / 2)
+            size: (self.width + self.outline_thickness, self.height + self.outline_thickness)
+            radius: (self.corner_radius,)
+
+        Color:
+            rgba: self.background_color
+        RoundedRectangle:
+            pos: (self.x + self.outline_thickness / 2, self.y + self.outline_thickness / 2)
+            size: (self.width - self.outline_thickness, self.height - self.outline_thickness)
+            radius: (self.corner_radius,)
+
+<SimpleTextButton@SimpleButton+Label>:
+    color: self.foreground_color
+
+<OutlineTextButton@OutlineButton+Label>:
+    color: self.foreground_color
+

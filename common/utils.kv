@@ -1,0 +1,65 @@
+#: import floor math.floor
+#: import LineStub common.utils.LineStub
+#: import TouchPassthrough common.utils.TouchPassthrough
+#: import ProxyWidget common.utils.ProxyWidget
+#: import ProxyDummy common.utils.ProxyDummy
+#: import ProxyLayout common.utils.ProxyLayout
+#: import FboLayout common.utils.FboLayout
+
+<HGlue@Widget>:
+    size: (0.0, 0.0)
+    size_hint: (1.0, None)
+
+<HLine@HGlue+LineStub>:
+    height: self.thickness
+    pos_hint: {"center_x": 0.5}
+
+    canvas:
+        Color:
+            rgb: self.color
+        Line:
+            points: (self.x, self.center_y, self.x + self.width, self.center_y)
+            width: self.thickness
+            cap: "round"
+
+<VGlue@Widget>:
+    size: (0.0, 0.0)
+    size_hint: (None, 1.0)
+
+<VLine@VGlue+LineStub>:
+    width: self.thickness
+    pos_hint: {"center_y": 0.5}
+
+    canvas:
+        Color:
+            rgb: self.color
+        Line:
+            points: (self.center_x, self.y, self.center_x, self.y + self.height)
+            width: self.thickness
+            cap: "round"
+
+<ProxyWidget>:
+    size_hint: self.proxy_child.size_hint
+    size_hint_min: self.proxy_child.size_hint_min
+    size_hint_max: self.proxy_child.size_hint_max
+    size: self.proxy_child.size
+    pos_hint: self.proxy_child.pos_hint
+
+<ProxyDummy>:
+    proxy_count: 1
+
+<ProxyBoxLayout@ProxyLayout+BoxLayout>
+
+<ProxyAnchorLayout@ProxyLayout+AnchorLayout>
+
+<ProxyFloatLayout@ProxyLayout+FloatLayout>
+
+<FboLayout>:
+    canvas.after:
+        Color:
+            rgb: (1.0, 1.0, 1.0)
+        Rectangle:
+            pos: (floor(self.x), floor(self.y))
+            size: self.fbo_size
+            texture: self.fbo_texture
+

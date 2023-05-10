@@ -1,0 +1,180 @@
+#: include common.kv
+#: import MenuScreen screens.menu.MenuScreen
+
+<MenuButton@OutlineTextButton>:
+    foreground_color: app.colors.foreground_1 if self.disabled else app.colors.background_0 if self.down else app.colors.foreground_0
+    background_color: app.colors.foreground_0 if self.down else app.colors.background_0
+    outline_color: app.colors.background_0 if self.down else app.colors.foreground_1
+    disabled_color: self.color
+    outline_thickness: dp(2)
+    corner_radius: dp(4)
+    font_size: sp(24)
+    font_name: "fonts/ApexMk2-Regular.otf"
+    size_hint: (0.8, None)
+    size_hint_min: self.texture_size
+    size: self.texture_size
+    padding: (dp(8), dp(8))
+    pos_hint: {"center_x": 0.5}
+    animation_duration: 0.1
+
+<MenuToggle@TogglingButton+MenuButton>
+
+<MenuLine@HLineThin>:
+    color: app.colors.foreground_0
+    size_hint_x: 0.9
+
+<SubmenuButton@SimpleTextButton>:
+    foreground_color: app.colors.foreground_1 if self.down else app.colors.foreground_0
+    background_color: app.colors.background_0
+    disabled_color: self.color
+    font_name: "fonts/ApexMk2-Regular.otf"
+    font_size: sp(24)
+    size_hint: (0.6, None)
+    size_hint_min: self.texture_size
+    size: self.texture_size
+    padding: (dp(8), dp(8))
+    pos_hint: {"center_x": 0.5}
+    animation_duration: 0.1
+
+<SubmenuLine@ProxyAnchorLayout>:
+    anchor_x: "center"
+    anchor_y: "center"
+
+    ProxyWidget:
+        HGlueHalf
+
+    HLineThin:
+        color: app.colors.background_1
+        size_hint_x: 0.6
+
+<SubmenuView@TouchPassthrough+ProxyAnchorLayout+StencilView>
+
+<HeaderLabel@Label>:
+    color: app.colors.foreground_0
+    font_size: sp(52)
+    size_hint: (None, None)
+    size: self.texture_size
+
+<MenuScreen>:
+    animation_duration: 0.2
+
+    ProxyBoxLayout:
+        orientation: "vertical"
+        y: min(0.0, self.parent.height - self.minimum_height)
+
+        FloatLayout:
+            id: nav
+            size_hint: (1.0, None)
+            height: nav_settings.height
+            
+            NavButtonSettings:
+                id: nav_settings
+
+        HGlueDouble:
+            size_hint_min_y: 0.0
+            size_hint_max_y: None
+
+        BoxLayout:
+            id: header
+            orientation: "vertical"
+            size_hint: (None, None)
+            size: self.minimum_size
+            pos_hint: {"center_x": 0.5}
+
+            HeaderLabel:
+                text: "Valid"
+                font_name: "fonts/ApexMk2-LightCondensed.otf"
+
+            HeaderLabel:
+                text: "Sudoku"
+                font_name: "fonts/ApexMk2-BoldExtended.otf"
+
+        HGlueDouble
+
+        MenuLine
+
+        HGlueDouble
+
+        MenuToggle:
+            id: toggle
+            text: "New Game"
+
+            on_down: root.toggle_submenu(self.down)
+
+        HGlueHalf
+
+        SubmenuView:
+            id: submenu
+            anchor_x: "center"
+            anchor_y: "center"
+            size_fraction: 0.0
+            size_hint: (1.0, None)
+            opacity: 0.0
+            disabled: True
+
+            ProxyDummy:
+                proxy_count: 2
+                -size_hint_min: (None, self.proxy_child.size_hint_min_y * submenu.size_fraction)
+                -size_hint_max: (None, self.proxy_child.size_hint_max_y * submenu.size_fraction)
+
+                HGlueHalf
+
+            ProxyDummy:
+                proxy_count: 3
+                -size_hint: (1.0, None)
+                -size: (0.0, self.proxy_child.height * submenu.size_fraction)
+
+                SubmenuButton:
+                    text: "N"
+
+            ProxyBoxLayout:
+                orientation: "vertical"
+                size_hint: (1.0, 1.0)
+                size_hint_min_y: self.minimum_height
+
+                SubmenuButton:
+                    text: "Easy"
+
+                    on_release: app.start_random_game(self.text); toggle.state = "normal"
+
+                SubmenuLine
+
+                SubmenuButton:
+                    text: "Normal"
+
+                    on_release: app.start_random_game(self.text); toggle.state = "normal"
+
+                SubmenuLine
+
+                SubmenuButton:
+                    text: "Hard"
+
+                    on_release: app.start_random_game(self.text); toggle.state = "normal"
+
+        HGlueHalf
+
+        MenuButton:
+            text: "Resume"
+            disabled: (app.state.solution is None) or (app.state.board is None)
+
+            on_release: app.switch_screen("game")
+
+        HGlueSingle
+
+        MenuButton:
+            text: "Import"
+
+            on_release: app.start_imported_game()
+
+        HGlueDouble
+
+        MenuLine
+
+        HGlueDouble:
+            size_hint_min_y: 0.0
+            size_hint_max_y: None
+
+        Widget:
+            size_hint: (1.0, None)
+            height: nav.height
+
