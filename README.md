@@ -37,3 +37,11 @@ buildozer android debug
 
 This produces an `.apk` file in the `bin/` subdirectory.
 
+## Screenshots
+
+[![screnshot-1](./images/screenshot-1-th.png)](./images/screenshot-1.png)
+[![screnshot-2](./images/screenshot-2-th.png)](./images/screenshot-2.png)
+[![screnshot-3](./images/screenshot-3-th.png)](./images/screenshot-3.png)
+[![screnshot-4](./images/screenshot-4-th.png)](./images/screenshot-4.png)
+[![screnshot-5](./images/screenshot-5-th.png)](./images/screenshot-5.png)
+
